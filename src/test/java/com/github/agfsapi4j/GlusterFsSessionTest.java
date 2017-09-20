@@ -49,7 +49,7 @@ public class GlusterFsSessionTest
 		givenAConnectedSession();
 		givenOpenSucceeds("aPath");
 
-		GlusterFsFile file = session.openFile("aPath", 0);
+		GlusterFsFile file = session.open("aPath", 0);
 
 		verify(resourceTracker).allocated(file);
 	}
@@ -60,7 +60,7 @@ public class GlusterFsSessionTest
 		givenAConnectedSession();
 		givenCreateSucceeds("aPath");
 
-		GlusterFsFile file = session.createFile("aPath", 0, 0);
+		GlusterFsFile file = session.create("aPath", 0, 0);
 
 		verify(resourceTracker).allocated(file);
 	}

@@ -29,4 +29,14 @@ public interface LibGfapi extends Library
 	int glfs_write(long glFsFdPtr, byte[] buf, int length, int flags);
 
 	int glfs_read(long glFsFdPtr, byte[] buf, int length, int flags);
+
+	int glfs_chown(long glFsPtr, String path, int uid, int gid);
+
+	int glfs_truncate (long glFsFdPtr, String path, int offset);
+
+	int glfs_mkdir(long glFsPtr, String path, int mode);
+
+	int glfs_rmdir(long glFsPtr, String path);
+
+	int glfs_rename(long glFsPtr, String oldPath, String newPath);
 }

@@ -67,7 +67,7 @@ public class GlusterFsSession implements Closeable
 		}
 	}
 
-	public String getCwd()
+	public String cwd()
 	{
 		try
 		{
@@ -85,7 +85,23 @@ public class GlusterFsSession implements Closeable
 		}
 	}
 
-	public GlusterFsFile createFile(String path, int flags, int mode)
+	public void chown(String path, int userId, int groupId)
+	{
+		checkConnected();
+
+		try
+		{
+			this.logAccess.beforeOp();
+			int result = lib.glfs_chown(this.glFsPtr, path, userId, groupId);
+			checkError(result, "glfs_chown failed.");
+		}
+		finally
+		{
+			this.logAccess.afterOp();
+		}
+	}
+
+	public GlusterFsFile create(String path, int flags, int mode)
 	{
 		checkConnected();
 
@@ -103,7 +119,7 @@ public class GlusterFsSession implements Closeable
 		}
 	}
 
-	public GlusterFsFile openFile(String path, int flags)
+	public GlusterFsFile open(String path, int flags)
 	{
 		checkConnected();
 
@@ -189,5 +205,42 @@ public class GlusterFsSession implements Closeable
 	{
 		String errors = this.logAccess.getLogMessages();
 		throw new IllegalStateException(message + "\n" + errors);
+	}
+
+	public void rename(String oldPath, String newPath)
+	{
+		checkConnected();
+
+		int result = this.lib.glfs_rename(this.glFsPtr, oldPath, newPath);
+		checkError(result, "glfs_rename failed.");
+	}
+
+	public void mkdir(String path, int mode)
+	{
+		checkConnected();
+
+		int result = this.lib.glfs_mkdir(this.glFsPtr, path, mode);
+		checkError(result, "glfs_mkdir failed.");
+	}
+
+	public void rmdir(String path)
+	{
+		checkConnected();
+
+		int result = this.lib.glfs_rmdir(this.glFsPtr, path);
+		checkError(result, "glfs_rmdir failed.");
+	}
+
+	public void truncate(String path)
+	{
+		truncate(path, 0);
+	}
+
+	public void truncate(String path, int offset)
+	{
+		checkConnected();
+
+		int result = this.lib.glfs_truncate(this.glFsPtr, path, offset);
+		checkError(result, "glfs_truncate failed.");
 	}
 }
