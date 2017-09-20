@@ -2,6 +2,18 @@
 
 #### An alternative GlusterFS API for Java
 
+## Example
+```java
+GlusterFsApi gfApi4J = GlusterFsApi.newInstance();
+try (GlusterFsSession session = gfApi4J.connect("host", GlusterFsApi.DEFAULT_PORT, "vol0");)
+{
+    GlusterFsFile file = session.openFile(testFilePath, GlusterFsApi.O_RDONLY);
+    byte[] buf = new byte[4096];
+    int count = file.read(buf);
+    file.close();
+}
+```
+
 ## Contributing
 This is an open source project, and contributions are welcome! Feel free to raise an issue or submit a pull request.
 
