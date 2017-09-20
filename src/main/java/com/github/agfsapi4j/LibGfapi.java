@@ -39,4 +39,8 @@ public interface LibGfapi extends Library
 	int glfs_rmdir(long glFsPtr, String path);
 
 	int glfs_rename(long glFsPtr, String oldPath, String newPath);
+
+	int glfs_unlink(long glFsPtr, String path);
+
+	int glfs_symlink(long glFsPtr, String targetPath, String sourcePath);
 }

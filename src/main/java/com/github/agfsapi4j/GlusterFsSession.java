@@ -207,6 +207,14 @@ public class GlusterFsSession implements Closeable
 		throw new IllegalStateException(message + "\n" + errors);
 	}
 
+	public void symlink(String targetPath, String sourcePath)
+	{
+		checkConnected();
+
+		int result = this.lib.glfs_symlink(this.glFsPtr, targetPath, sourcePath);
+		checkError(result, "glfs_symlink failed.");
+	}
+
 	public void rename(String oldPath, String newPath)
 	{
 		checkConnected();
@@ -229,6 +237,14 @@ public class GlusterFsSession implements Closeable
 
 		int result = this.lib.glfs_rmdir(this.glFsPtr, path);
 		checkError(result, "glfs_rmdir failed.");
+	}
+
+	public void unlink(String path)
+	{
+		checkConnected();
+
+		int result = this.lib.glfs_unlink(this.glFsPtr, path);
+		checkError(result, "glfs_unlink failed.");
 	}
 
 	public void truncate(String path)
