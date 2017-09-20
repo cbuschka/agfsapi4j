@@ -1,5 +1,6 @@
 package com.github.agfsapi4j;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +37,7 @@ public class GlusterFsSessionTest
 		LibGfapiProvider.override(mock(LibGfapi.class));
 	}
 
-	@BeforeClass
+	@AfterClass
 	public static void tearDown()
 	{
 		LibGfapiProvider.clearOverride();
