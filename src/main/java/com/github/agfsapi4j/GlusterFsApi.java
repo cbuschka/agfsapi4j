@@ -12,7 +12,11 @@ public class GlusterFsApi
 	public static final int O_TRUNC = 0x0800;
 	public static final int O_APPEND = 0x1000;
 
-	public GlusterFsApi()
+	public static GlusterFsApi newInstance() {
+		return new GlusterFsApi();
+	}
+
+	GlusterFsApi()
 	{
 	}
 

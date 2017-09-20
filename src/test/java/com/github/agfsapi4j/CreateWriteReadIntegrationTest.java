@@ -15,7 +15,7 @@ public class CreateWriteReadIntegrationTest
 	@Test
 	public void testNode1() throws Exception
 	{
-		GlusterFsApi gfApi4J = new GlusterFsApi();
+		GlusterFsApi gfApi4J = GlusterFsApi.newInstance();
 		try (GlusterFsSession session = gfApi4J.connect("knot1", GlusterFsApi.DEFAULT_PORT, "vol0");)
 		{
 			String cwd = session.getCwd();
