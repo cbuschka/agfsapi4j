@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,6 +38,22 @@ public class GlusterFsSessionTest
 		GlusterFsFile file = session.openFile("aPath", 0);
 
 		verify(resourceTracker).allocated(file);
+	}
+
+	@Test
+	public void createdFileIsTracked()
+	{
+		givenAConnectedSession();
+		givenCreateSucceeds("aPath");
+
+		GlusterFsFile file = session.createFile("aPath", 0, 0);
+
+		verify(resourceTracker).allocated(file);
+	}
+
+	private void givenCreateSucceeds(String aPath)
+	{
+		when(lib.glfs_creat(CONNECTED_SESSION_ID, aPath, 0, 0)).thenReturn(OPENED_FILE_ID);
 	}
 
 	private void givenOpenSucceeds(String aPath)
