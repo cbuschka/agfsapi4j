@@ -3,7 +3,11 @@ package com.github.agfsapi4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.Closeable;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 
 public class GlusterFsSession implements Closeable
 {
@@ -108,7 +112,7 @@ public class GlusterFsSession implements Closeable
 		try
 		{
 			this.logAccess.beforeOp();
-			long glFsFdPtr = lib.glfs_creat(this.glFsPtr, path, flags, mode);
+			long glFsFdPtr = lib.glfs_creat(this.glFsPtr, path, (short)flags, (short)mode);
 			checkPtr(glFsFdPtr, "glfs_create failed.");
 
 			return new GlusterFsFile(this, this.lib, this.logAccess, this.resourceTracker, glFsFdPtr);
@@ -126,7 +130,7 @@ public class GlusterFsSession implements Closeable
 		try
 		{
 			this.logAccess.beforeOp();
-			long glFsFdPtr = lib.glfs_open(this.glFsPtr, path, flags);
+			long glFsFdPtr = lib.glfs_open(this.glFsPtr, path, (short)flags);
 			checkPtr(glFsFdPtr, "glfs_open failed.");
 
 			return new GlusterFsFile(this, this.lib, this.logAccess, this.resourceTracker, glFsFdPtr);
@@ -205,6 +209,24 @@ public class GlusterFsSession implements Closeable
 	{
 		String errors = this.logAccess.getLogMessages();
 		throw new IllegalStateException(message + "\n" + errors);
+	}
+
+	public GlusterFsFileStats stat(String path)
+	{
+		checkConnected();
+
+		try
+		{
+			byte[] buf = new byte[512];
+			int result = this.lib.glfs_stat(this.glFsPtr, path, buf);
+			checkError(result, "glfs_stat failed.");
+
+			return new GlusterFsFileStats(buf);
+		}
+		catch (IOException ex)
+		{
+			throw new UndeclaredThrowableException(ex);
+		}
 	}
 
 	public void symlink(String targetPath, String sourcePath)

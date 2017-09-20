@@ -16,9 +16,9 @@ public interface LibGfapi extends Library
 
 	int glfs_set_volfile_server(long glfsPtr, String transport, String server, int port);
 
-	long glfs_creat(long glfsPtr, String path, int openFlags, int mode);
+	long glfs_creat(long glfsPtr, String path, short openFlags, short mode);
 
-	long glfs_open(long glfsPtr, String path, int openFlags);
+	long glfs_open(long glfsPtr, String path, short openFlags);
 
 	int glfs_fini(long glfsPtr);
 
@@ -43,4 +43,6 @@ public interface LibGfapi extends Library
 	int glfs_unlink(long glFsPtr, String path);
 
 	int glfs_symlink(long glFsPtr, String targetPath, String sourcePath);
+
+	int glfs_stat(long glFsPtr, String path, byte[] statBuf);
 }

@@ -22,11 +22,17 @@ public class CreateWriteReadIntegrationTest
 			assertThat(cwd, is("/"));
 
 			String testFilePath = "/.test/test." + System.currentTimeMillis();
-			GlusterFsFile file = session.create(testFilePath, GlusterFsApi.O_WRONLY, 0x755);
-			byte[] testData = new byte[1024];
+			GlusterFsFile file = session.create(testFilePath, GlusterFsApi.O_WRONLY, 0755);
+			byte[] testData = new byte[1025];
 			random.nextBytes(testData);
 			file.write(testData);
 			file.close();
+
+			GlusterFsFileStats stat = session.stat(testFilePath);
+			assertThat(stat.getSize(), is(1025));
+			assertThat(stat.getUid(), is(1000));
+			assertThat(stat.getGid(), is(1000));
+			// assertThat(Integer.toOctalString(stat.getMode()), is("644"));
 
 			file = session.open(testFilePath, GlusterFsApi.O_RDONLY);
 			byte[] buf = new byte[4096];
@@ -43,7 +49,7 @@ public class CreateWriteReadIntegrationTest
 			String testDirPath = "/.test/testdir." + System.currentTimeMillis();
 			session.mkdir(testDirPath, 0755);
 			session.rename(testDirPath, testDirPath + ".2");
-			session.rmdir(testDirPath+".2");
+			session.rmdir(testDirPath + ".2");
 		}
 	}
 }
