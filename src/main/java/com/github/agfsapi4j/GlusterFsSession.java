@@ -4,19 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
 public class GlusterFsSession implements Closeable
 {
-	private static final Random random = new Random();
-
 	private static final int DEFAULT_LOG_LEVEL = 6;
 
 	private Logger log = LoggerFactory.getLogger(GlusterFsSession.class);
@@ -27,10 +19,10 @@ public class GlusterFsSession implements Closeable
 	private int port;
 	private String volName;
 
+	LogAccess logAccess = new LogAccess();
+
 	private Throwable connectStackTrace;
 	private Set<GlusterFsSessionObject> allocatedObjects = new HashSet<>();
-	private File logFile;
-	private long prevLogLength = 0L;
 	private long glFsPtr;
 
 	GlusterFsSession(String hostName, int port, String volName)
@@ -48,43 +40,42 @@ public class GlusterFsSession implements Closeable
 		this.connectStackTrace.fillInStackTrace();
 
 		this.glFsPtr = lib.glfs_new(volName);
-		checkPtr(this.glFsPtr, "glfs_new failed (0).", false);
+		checkPtr(this.glFsPtr, "glfs_new failed (0).");
 
-		this.logFile = new File("/tmp/gfapi4j-" + Long.toHexString(System.currentTimeMillis()) + "-" + Long.toHexString(random.nextLong()) + ".log");
-		int error = lib.glfs_set_logging(glFsPtr, (logFile.getAbsolutePath()), DEFAULT_LOG_LEVEL);
-		checkError(error, "glfs_set_logging failed (%d).", false);
+		int error = lib.glfs_set_logging(glFsPtr, logAccess.getLogFilePath(), DEFAULT_LOG_LEVEL);
+		checkError(error, "glfs_set_logging failed (%d).");
 
 		try
 		{
 			beforeOp();
 			error = lib.glfs_set_volfile(glFsPtr, volName);
-			checkError(error, "glfs_set_volfile failed (%d).", true);
+			checkError(error, "glfs_set_volfile failed (%d).");
 		}
 		finally
 		{
-			afterOp();
+			this.logAccess.afterOp();
 		}
 
 		try
 		{
 			beforeOp();
 			error = lib.glfs_set_volfile_server(glFsPtr, "tcp", hostName, port);
-			checkError(error, "glfs_set_volfile_server failed (%d).", true);
+			checkError(error, "glfs_set_volfile_server failed (%d).");
 		}
 		finally
 		{
-			afterOp();
+			this.logAccess.afterOp();
 		}
 
 		try
 		{
 			beforeOp();
 			error = lib.glfs_init(glFsPtr);
-			checkError(error, "glfs_init failed (%d).", true);
+			checkError(error, "glfs_init failed (%d).");
 		}
 		finally
 		{
-			afterOp();
+			this.logAccess.afterOp();
 		}
 	}
 
@@ -95,14 +86,14 @@ public class GlusterFsSession implements Closeable
 			beforeOp();
 			byte[] cbuf = new byte[4096];
 			long ptr = lib.glfs_getcwd(glFsPtr, cbuf, cbuf.length);
-			checkPtr(ptr, "glfs_getcwd failed.", true);
+			checkPtr(ptr, "glfs_getcwd failed.");
 			int zeroPos;
 			for (zeroPos = 0; zeroPos < cbuf.length && cbuf[zeroPos] != 0; ++zeroPos) ;
 			return new String(cbuf, 0, zeroPos);
 		}
 		finally
 		{
-			afterOp();
+			this.logAccess.afterOp();
 		}
 	}
 
@@ -114,13 +105,13 @@ public class GlusterFsSession implements Closeable
 		{
 			beforeOp();
 			long glFsFdPtr = lib.glfs_creat(this.glFsPtr, path, flags, mode);
-			checkPtr(glFsFdPtr, "glfs_create failed.", true);
+			checkPtr(glFsFdPtr, "glfs_create failed.");
 
 			return new GlusterFsFile(this, glFsFdPtr);
 		}
 		finally
 		{
-			afterOp();
+			this.logAccess.afterOp();
 		}
 	}
 
@@ -132,32 +123,19 @@ public class GlusterFsSession implements Closeable
 		{
 			beforeOp();
 			long glFsFdPtr = lib.glfs_open(this.glFsPtr, path, flags);
-			checkPtr(glFsFdPtr, "glfs_open failed.", true);
+			checkPtr(glFsFdPtr, "glfs_open failed.");
 
 			return new GlusterFsFile(this, glFsFdPtr);
 		}
 		finally
 		{
-			afterOp();
+			this.logAccess.afterOp();
 		}
-	}
-
-	void afterOp()
-	{
-		updateLogFilePos();
 	}
 
 	void beforeOp()
 	{
-		updateLogFilePos();
-	}
-
-	private void updateLogFilePos()
-	{
-		if (this.logFile != null)
-		{
-			this.prevLogLength = this.logFile.length();
-		}
+		this.logAccess.beforeOp();
 	}
 
 	private boolean isClosed()
@@ -198,66 +176,36 @@ public class GlusterFsSession implements Closeable
 			glFsPtr = 0;
 		}
 
-		if (this.logFile != null && this.logFile.isFile())
-		{
-			this.logFile.delete();
-			this.logFile = null;
-		}
+		this.logAccess.close(true);
 	}
 
 	private void checkConnected()
 	{
-		checkPtr(this.glFsPtr, "Session closed.", false);
+		checkPtr(this.glFsPtr, "Session closed.");
 	}
 
-	void checkPtr(long ptr, String message, boolean readLog)
+	void checkPtr(long ptr, String message)
 	{
 		if (ptr == 0)
 		{
-			raiseError(message, readLog);
+			raiseError(message);
 		}
 	}
 
-	void checkError(int error, String msg, boolean readLog)
+	void checkError(int error, String msg)
 	{
 		if (error != 0)
 		{
-			raiseError(String.format(msg, error), readLog);
+			raiseError(String.format(msg, error));
 		}
 	}
 
-	void raiseError(String message, boolean readLog)
+	void raiseError(String message)
 	{
-		String errors = "(No log information available, sorry.)";
-		if (readLog && this.logFile != null && this.logFile.isFile())
-		{
-			errors = readLog();
-		}
-
+		String errors = this.logAccess.getLogMessages();
 		throw new IllegalStateException(message + "\n" + errors);
 	}
 
-	private String readLog()
-	{
-		try (FileInputStream in = new FileInputStream(this.logFile);)
-		{
-			StringBuilder buf = new StringBuilder();
-			in.skip(this.prevLogLength);
-			char[] cbuf = new char[1024];
-			Reader rd = new InputStreamReader(in);
-			int count;
-			while ((count = rd.read(cbuf)) != -1)
-			{
-				buf.append(cbuf, 0, count);
-			}
-
-			return buf.toString();
-		}
-		catch (IOException ex)
-		{
-			return ex.getMessage();
-		}
-	}
 
 	void allocated(GlusterFsSessionObject object)
 	{

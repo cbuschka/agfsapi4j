@@ -51,12 +51,12 @@ public class GlusterFsFile implements GlusterFsSessionObject
 
 			if (result < 0 || result != count)
 			{
-				session.raiseError(String.format("glfs_write failed (result=%d, count=%d).", result, count), true);
+				session.raiseError(String.format("glfs_write failed (result=%d, count=%d).", result, count));
 			}
 		}
 		finally
 		{
-			session.afterOp();
+			session.logAccess.afterOp();
 		}
 	}
 
@@ -79,14 +79,14 @@ public class GlusterFsFile implements GlusterFsSessionObject
 			int result = this.session.lib.glfs_read(this.glFsFdPtr, buf, buf.length, 0);
 			if (result < 0)
 			{
-				session.raiseError(String.format("glfs_read failed (result=%d).", result), true);
+				session.raiseError(String.format("glfs_read failed (result=%d).", result));
 			}
 
 			return result;
 		}
 		finally
 		{
-			session.afterOp();
+			session.logAccess.afterOp();
 		}
 	}
 }
