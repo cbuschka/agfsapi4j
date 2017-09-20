@@ -12,6 +12,7 @@ for native access instead of jni.
 Currently the features implemented are far from complete, but messages in case of errors are far, far better.
 
 | Feature                     | AGFsApi4J | glusterfs-java-filesystem |
+|:--------------------------- | --------- | ------------------------- |
 | Depends on libgfapi         |    yes    |             yes           |
 | Native access               |    jna    |             jni           |
 | Java Filesystem integration |    no     |             yes           |
