@@ -2,6 +2,15 @@
 
 #### An alternative GlusterFS API for Java
 
+The original plan was the creation of a pure Java GlusterFS client lib. But this idea was discarded because of GlusterFS use 
+of translators written in C that must be rewritten in Java too.
+
+So AGFsApi4J is  - beside of the (original java binding)[https://github.com/gluster/glusterfs-java-filesystem] -  
+another GlusterFS java binding that depends on the native libgfapi, but uses (jna)[https://github.com/java-native-access/jna]
+for native access instead of jni.
+
+Currently the features implemented are far from complete, but messages in case of errors are far, far better.
+
 ## Example
 ```java
 GlusterFsApi gfApi4J = GlusterFsApi.newInstance();
