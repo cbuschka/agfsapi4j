@@ -1,12 +1,13 @@
 package com.github.agfsapi4j;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +29,18 @@ public class GlusterFsSessionTest
 
 	@Mock
 	private LibGfapi lib;
+
+	@BeforeClass
+	public static void setUp()
+	{
+		LibGfapiProvider.override(mock(LibGfapi.class));
+	}
+
+	@BeforeClass
+	public static void tearDown()
+	{
+		LibGfapiProvider.clearOverride();
+	}
 
 	@Test
 	public void openedFileIsTracked()

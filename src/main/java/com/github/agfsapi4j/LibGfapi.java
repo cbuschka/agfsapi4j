@@ -6,8 +6,6 @@ import com.sun.jna.Native;
 // see https://github.com/gluster/glusterfs/blob/master/api/src/glfs.h
 public interface LibGfapi extends Library
 {
-	LibGfapi INSTANCE = (LibGfapi) Native.loadLibrary("gfapi", LibGfapi.class);
-
 	long glfs_new(String volName);
 
 	int glfs_set_logging(long glfsPtr, String logfilePath, int logLevel);

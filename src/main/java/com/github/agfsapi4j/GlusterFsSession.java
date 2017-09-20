@@ -11,7 +11,7 @@ public class GlusterFsSession implements Closeable
 
 	private Logger log = LoggerFactory.getLogger(GlusterFsSession.class);
 
-	private LibGfapi lib = LibGfapi.INSTANCE;
+	private LibGfapi lib = LibGfapiProvider.get();
 	private LogAccess logAccess = new LogAccess();
 	private ResourceTracker resourceTracker = new ResourceTracker();
 
