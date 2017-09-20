@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 class ResourceTracker
@@ -25,21 +24,19 @@ class ResourceTracker
 
 	public void closeResources()
 	{
-		for (Iterator<Resource> iter = this.allocatedObjects.iterator(); iter.hasNext(); )
+		Set<Resource> resources = new HashSet<>(this.allocatedObjects);
+		for (Resource resource : resources)
 		{
-			Resource object = iter.next();
 			try
 			{
-				object.close();
+				resource.close();
 			}
 			catch (Exception ex)
 			{
 				log.warn("Closing resource failed.", ex);
 			}
-			finally
-			{
-				iter.remove();
-			}
 		}
+
+		this.allocatedObjects.removeAll(resources);
 	}
 }
