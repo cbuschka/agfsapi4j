@@ -2,6 +2,7 @@
 
 #### An alternative GlusterFS API for Java
 
+## Comparison with [original java binding](https://github.com/gluster/glusterfs-java-filesystem) 
 The original plan was the creation of a pure Java GlusterFS client lib. But this idea was discarded because of GlusterFS use 
 of translators written in C that must be rewritten in Java too.
 
@@ -17,6 +18,23 @@ Currently the features implemented are far from complete, but messages in case o
 | Native access               |    jna    |             jni           |
 | Java Filesystem integration |    no     |             yes           |
 | Log Messages from libgfapi  |    yes    |              no           |
+
+## Feature Status
+
+| Feature                     |   Status   |
+|:--------------------------- |:----------:|
+| Connect                     |     yes    |
+| Create file                 |     yes    |
+| Read file                   |     yes    |
+| Write file                  |     yes    |
+| Delete file                 |     no     |
+| Rename file                 |     no     |
+| Create directory            |     no     |
+| List directory files        |     no     |
+| Get file stats              |     no     |
+| Get cluster status          |     no     |
+| Java filesytem integration  |     no     |
+| ...                         |     no     |
 
 ## Example
 ```java
