@@ -4,8 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
-import java.util.HashSet;
-import java.util.Set;
 
 public class GlusterFsSession implements Closeable
 {
@@ -13,28 +11,18 @@ public class GlusterFsSession implements Closeable
 
 	private Logger log = LoggerFactory.getLogger(GlusterFsSession.class);
 
-	LibGfapi lib = LibGfapi.INSTANCE;
-
-	private String hostName;
-	private int port;
-	private String volName;
-
-	LogAccess logAccess = new LogAccess();
+	private LibGfapi lib = LibGfapi.INSTANCE;
+	private LogAccess logAccess = new LogAccess();
+	private ResourceTracker resourceTracker = new ResourceTracker();
 
 	private Throwable connectStackTrace;
-	private Set<GlusterFsSessionObject> allocatedObjects = new HashSet<>();
-	private long glFsPtr;
+	long glFsPtr;
 
-	GlusterFsSession(String hostName, int port, String volName)
+	GlusterFsSession()
 	{
-		this.hostName = hostName;
-		this.port = port;
-		this.volName = volName;
-
-		connect();
 	}
 
-	private void connect()
+	void connect(String hostName, int port, String volName)
 	{
 		this.connectStackTrace = new Throwable("Stack trace of allocation");
 		this.connectStackTrace.fillInStackTrace();
@@ -47,7 +35,7 @@ public class GlusterFsSession implements Closeable
 
 		try
 		{
-			beforeOp();
+			this.logAccess.beforeOp();
 			error = lib.glfs_set_volfile(glFsPtr, volName);
 			checkError(error, "glfs_set_volfile failed (%d).");
 		}
@@ -58,7 +46,7 @@ public class GlusterFsSession implements Closeable
 
 		try
 		{
-			beforeOp();
+			this.logAccess.beforeOp();
 			error = lib.glfs_set_volfile_server(glFsPtr, "tcp", hostName, port);
 			checkError(error, "glfs_set_volfile_server failed (%d).");
 		}
@@ -69,7 +57,7 @@ public class GlusterFsSession implements Closeable
 
 		try
 		{
-			beforeOp();
+			this.logAccess.beforeOp();
 			error = lib.glfs_init(glFsPtr);
 			checkError(error, "glfs_init failed (%d).");
 		}
@@ -83,7 +71,7 @@ public class GlusterFsSession implements Closeable
 	{
 		try
 		{
-			beforeOp();
+			this.logAccess.beforeOp();
 			byte[] cbuf = new byte[4096];
 			long ptr = lib.glfs_getcwd(glFsPtr, cbuf, cbuf.length);
 			checkPtr(ptr, "glfs_getcwd failed.");
@@ -103,11 +91,11 @@ public class GlusterFsSession implements Closeable
 
 		try
 		{
-			beforeOp();
+			this.logAccess.beforeOp();
 			long glFsFdPtr = lib.glfs_creat(this.glFsPtr, path, flags, mode);
 			checkPtr(glFsFdPtr, "glfs_create failed.");
 
-			return new GlusterFsFile(this, glFsFdPtr);
+			return new GlusterFsFile(this, this.lib, this.logAccess, this.resourceTracker, glFsFdPtr);
 		}
 		finally
 		{
@@ -121,21 +109,16 @@ public class GlusterFsSession implements Closeable
 
 		try
 		{
-			beforeOp();
+			this.logAccess.beforeOp();
 			long glFsFdPtr = lib.glfs_open(this.glFsPtr, path, flags);
 			checkPtr(glFsFdPtr, "glfs_open failed.");
 
-			return new GlusterFsFile(this, glFsFdPtr);
+			return new GlusterFsFile(this, this.lib, this.logAccess, this.resourceTracker, glFsFdPtr);
 		}
 		finally
 		{
 			this.logAccess.afterOp();
 		}
-	}
-
-	void beforeOp()
-	{
-		this.logAccess.beforeOp();
 	}
 
 	private boolean isClosed()
@@ -148,27 +131,29 @@ public class GlusterFsSession implements Closeable
 	{
 		if (!isClosed())
 		{
-			try
-			{
-				log.warn("Session has not been closed.", this.connectStackTrace);
-
-				close();
-			}
-			catch (Exception ex)
-			{
-				log.warn("Error while closing session in finalize.", ex);
-			}
+			closeOnFinalize();
 		}
 
 		super.finalize();
 	}
 
+	private void closeOnFinalize()
+	{
+		try
+		{
+			log.warn("Session has not been closed.", this.connectStackTrace);
+
+			close();
+		}
+		catch (Exception ex)
+		{
+			log.warn("Error while closing session in finalize.", ex);
+		}
+	}
+
 	public void close()
 	{
-		for (GlusterFsSessionObject object : this.allocatedObjects)
-		{
-			object.close();
-		}
+		this.resourceTracker.closeResources();
 
 		if (glFsPtr != 0)
 		{
@@ -204,16 +189,5 @@ public class GlusterFsSession implements Closeable
 	{
 		String errors = this.logAccess.getLogMessages();
 		throw new IllegalStateException(message + "\n" + errors);
-	}
-
-
-	void allocated(GlusterFsSessionObject object)
-	{
-		this.allocatedObjects.add(object);
-	}
-
-	void freed(GlusterFsSessionObject object)
-	{
-		this.allocatedObjects.remove(object);
 	}
 }

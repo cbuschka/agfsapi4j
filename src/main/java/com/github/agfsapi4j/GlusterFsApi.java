@@ -12,7 +12,8 @@ public class GlusterFsApi
 	public static final int O_TRUNC = 0x0800;
 	public static final int O_APPEND = 0x1000;
 
-	public static GlusterFsApi newInstance() {
+	public static GlusterFsApi newInstance()
+	{
 		return new GlusterFsApi();
 	}
 
@@ -22,7 +23,8 @@ public class GlusterFsApi
 
 	public GlusterFsSession connect(String hostName, int port, String volName)
 	{
-		GlusterFsSession session = new GlusterFsSession(hostName, port, volName);
+		GlusterFsSession session = new GlusterFsSession();
+		session.connect(hostName, port, volName);
 		return session;
 	}
 }

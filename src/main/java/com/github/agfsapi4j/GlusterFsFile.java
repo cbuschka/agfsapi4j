@@ -1,24 +1,30 @@
 package com.github.agfsapi4j;
 
-public class GlusterFsFile implements GlusterFsSessionObject
+public class GlusterFsFile implements Resource
 {
 	private GlusterFsSession session;
+	private LibGfapi lib;
+	private LogAccess logAccess;
+	private ResourceTracker resourceTracker;
 	private long glFsFdPtr;
 
-	GlusterFsFile(GlusterFsSession session, long glFsFdPtr)
+	GlusterFsFile(GlusterFsSession session, LibGfapi lib, LogAccess logAccess, ResourceTracker resourceTracker, long glFsFdPtr)
 	{
 		this.session = session;
+		this.lib = lib;
+		this.logAccess = logAccess;
+		this.resourceTracker = resourceTracker;
 		this.glFsFdPtr = glFsFdPtr;
 
-		this.session.allocated(this);
+		this.resourceTracker.allocated(this);
 	}
 
 	public void close()
 	{
 		if (this.glFsFdPtr != 0)
 		{
-			this.session.lib.glfs_close(this.glFsFdPtr);
-			this.session.freed(this);
+			this.lib.glfs_close(this.glFsFdPtr);
+			this.resourceTracker.unallocated(this);
 			this.glFsFdPtr = 0;
 			this.session = null;
 		}
@@ -35,18 +41,18 @@ public class GlusterFsFile implements GlusterFsSessionObject
 
 		try
 		{
-			session.beforeOp();
+			this.logAccess.beforeOp();
 
 			int result;
 			if (offset != 0)
 			{
 				byte[] newBuf = new byte[count];
 				System.arraycopy(newBuf, 0, buf, offset, count);
-				result = this.session.lib.glfs_write(this.glFsFdPtr, newBuf, count, 0);
+				result = this.lib.glfs_write(this.glFsFdPtr, newBuf, count, 0);
 			}
 			else
 			{
-				result = this.session.lib.glfs_write(this.glFsFdPtr, buf, count, 0);
+				result = this.lib.glfs_write(this.glFsFdPtr, buf, count, 0);
 			}
 
 			if (result < 0 || result != count)
@@ -56,7 +62,7 @@ public class GlusterFsFile implements GlusterFsSessionObject
 		}
 		finally
 		{
-			session.logAccess.afterOp();
+			this.logAccess.afterOp();
 		}
 	}
 
@@ -74,9 +80,9 @@ public class GlusterFsFile implements GlusterFsSessionObject
 
 		try
 		{
-			session.beforeOp();
+			this.logAccess.beforeOp();
 
-			int result = this.session.lib.glfs_read(this.glFsFdPtr, buf, buf.length, 0);
+			int result = this.lib.glfs_read(this.glFsFdPtr, buf, buf.length, 0);
 			if (result < 0)
 			{
 				session.raiseError(String.format("glfs_read failed (result=%d).", result));
@@ -86,7 +92,7 @@ public class GlusterFsFile implements GlusterFsSessionObject
 		}
 		finally
 		{
-			session.logAccess.afterOp();
+			this.logAccess.afterOp();
 		}
 	}
 }
