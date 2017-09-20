@@ -2,7 +2,7 @@
 
 #### An alternative GlusterFS API for Java
 
-## Comparison with [original java binding](https://github.com/gluster/glusterfs-java-filesystem) 
+## Comparison with original GlusterFS Java bindings
 The original plan was the creation of a pure Java GlusterFS client lib. But this idea was discarded because of GlusterFS use 
 of translators written in C that must be rewritten in Java too.
 
