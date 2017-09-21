@@ -67,12 +67,12 @@ public class GlusterFsSessionTest
 
 	private void givenCreateSucceeds(String aPath)
 	{
-		when(lib.glfs_creat(CONNECTED_SESSION_ID, aPath, (short)0, (short)0)).thenReturn(OPENED_FILE_ID);
+		when(lib.glfs_creat(CONNECTED_SESSION_ID, aPath, (short) 0, Mode.valueOf(0))).thenReturn(OPENED_FILE_ID);
 	}
 
 	private void givenOpenSucceeds(String aPath)
 	{
-		when(lib.glfs_open(CONNECTED_SESSION_ID, aPath, (short)0)).thenReturn(OPENED_FILE_ID);
+		when(lib.glfs_open(CONNECTED_SESSION_ID, aPath, (short) 0)).thenReturn(OPENED_FILE_ID);
 	}
 
 	private void givenAConnectedSession()

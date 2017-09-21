@@ -3,15 +3,15 @@ package com.github.agfsapi4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.Closeable;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class GlusterFsSession implements Closeable
 {
-	private static final int DEFAULT_LOG_LEVEL = 6;
+	private static final int DEFAULT_LOG_LEVEL = 10;
 
 	private Logger log = LoggerFactory.getLogger(GlusterFsSession.class);
 
@@ -112,7 +112,7 @@ public class GlusterFsSession implements Closeable
 		try
 		{
 			this.logAccess.beforeOp();
-			long glFsFdPtr = lib.glfs_creat(this.glFsPtr, path, (short)flags, (short)mode);
+			long glFsFdPtr = lib.glfs_creat(this.glFsPtr, path, (short) flags, Mode.valueOf(mode));
 			checkPtr(glFsFdPtr, "glfs_create failed.");
 
 			return new GlusterFsFile(this, this.lib, this.logAccess, this.resourceTracker, glFsFdPtr);
@@ -130,7 +130,7 @@ public class GlusterFsSession implements Closeable
 		try
 		{
 			this.logAccess.beforeOp();
-			long glFsFdPtr = lib.glfs_open(this.glFsPtr, path, (short)flags);
+			long glFsFdPtr = lib.glfs_open(this.glFsPtr, path, (short) flags);
 			checkPtr(glFsFdPtr, "glfs_open failed.");
 
 			return new GlusterFsFile(this, this.lib, this.logAccess, this.resourceTracker, glFsFdPtr);
@@ -217,9 +217,12 @@ public class GlusterFsSession implements Closeable
 
 		try
 		{
-			byte[] buf = new byte[512];
-			int result = this.lib.glfs_stat(this.glFsPtr, path, buf);
+			byte[] bbuf = new byte[512];
+			int result = this.lib.glfs_stat(this.glFsPtr, path, bbuf);
 			checkError(result, "glfs_stat failed.");
+
+			ByteBuffer buf = ByteBuffer.wrap(bbuf);
+			buf.order(ByteOrder.LITTLE_ENDIAN);
 
 			return new GlusterFsFileStats(buf);
 		}
@@ -249,7 +252,7 @@ public class GlusterFsSession implements Closeable
 	{
 		checkConnected();
 
-		int result = this.lib.glfs_mkdir(this.glFsPtr, path, mode);
+		int result = this.lib.glfs_mkdir(this.glFsPtr, path, Mode.valueOf(mode));
 		checkError(result, "glfs_mkdir failed.");
 	}
 
@@ -280,5 +283,13 @@ public class GlusterFsSession implements Closeable
 
 		int result = this.lib.glfs_truncate(this.glFsPtr, path, offset);
 		checkError(result, "glfs_truncate failed.");
+	}
+
+	public void chdir(String path)
+	{
+		checkConnected();
+
+		int result = this.lib.glfs_chdir(this.glFsPtr, path);
+		checkError(result, "glfs_chdir failed.");
 	}
 }

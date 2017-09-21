@@ -1,7 +1,6 @@
 package com.github.agfsapi4j;
 
 import com.sun.jna.Library;
-import com.sun.jna.Native;
 
 // see https://github.com/gluster/glusterfs/blob/master/api/src/glfs.h
 public interface LibGfapi extends Library
@@ -16,9 +15,9 @@ public interface LibGfapi extends Library
 
 	int glfs_set_volfile_server(long glfsPtr, String transport, String server, int port);
 
-	long glfs_creat(long glfsPtr, String path, short openFlags, short mode);
+	long glfs_creat(long glfsPtr, String path, int openFlags, Mode mode);
 
-	long glfs_open(long glfsPtr, String path, short openFlags);
+	long glfs_open(long glfsPtr, String path, int openFlags);
 
 	int glfs_fini(long glfsPtr);
 
@@ -26,15 +25,17 @@ public interface LibGfapi extends Library
 
 	long glfs_getcwd(long glFsPtr, byte[] buf, int length);
 
+	int glfs_chdir(long glFsPtr, String path);
+
 	int glfs_write(long glFsFdPtr, byte[] buf, int length, int flags);
 
 	int glfs_read(long glFsFdPtr, byte[] buf, int length, int flags);
 
 	int glfs_chown(long glFsPtr, String path, int uid, int gid);
 
-	int glfs_truncate (long glFsFdPtr, String path, int offset);
+	int glfs_truncate(long glFsFdPtr, String path, int offset);
 
-	int glfs_mkdir(long glFsPtr, String path, int mode);
+	int glfs_mkdir(long glFsPtr, String path, Mode mode);
 
 	int glfs_rmdir(long glFsPtr, String path);
 

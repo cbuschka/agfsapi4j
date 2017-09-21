@@ -27,11 +27,14 @@ Currently the features implemented are far from complete, but messages in case o
 | Create file                 |     yes    |
 | Read file                   |     yes    |
 | Write file                  |     yes    |
-| Delete file                 |     no     |
-| Rename file                 |     no     |
-| Create directory            |     no     |
+| Delete file                 |     yes    |
+| Rename file                 |     yes    |
+| Create directory            |     yes    |
+| Rename directory            |     yes    |
+| Remove directory            |     yes    |
 | List directory files        |     no     |
-| Get file stats              |     no     |
+| Get file stats              |     yes    |
+| Get directory stats         |     yes    |
 | Get cluster status          |     no     |
 | Java filesytem integration  |     no     |
 | ...                         |     no     |
