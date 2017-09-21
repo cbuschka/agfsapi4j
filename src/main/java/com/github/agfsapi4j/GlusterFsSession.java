@@ -1,5 +1,6 @@
 package com.github.agfsapi4j;
 
+import com.sun.jna.Pointer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -197,6 +198,14 @@ public class GlusterFsSession implements Closeable
 		}
 	}
 
+	void checkPtr(Pointer ptr, String message)
+	{
+		if (ptr == Pointer.NULL)
+		{
+			raiseError(message);
+		}
+	}
+
 	void checkError(int error, String msg)
 	{
 		if (error != 0)
@@ -291,5 +300,16 @@ public class GlusterFsSession implements Closeable
 
 		int result = this.lib.glfs_chdir(this.glFsPtr, path);
 		checkError(result, "glfs_chdir failed.");
+	}
+
+	public GlusterFsDirectoryIndex opendir(String path)
+	{
+		checkConnected();
+
+		Pointer result = this.lib.glfs_opendir(this.glFsPtr, path);
+		checkPtr(result, "glfs_opendir failed.");
+
+		return new DirectoryIndexImpl(this, this.lib,
+				this.logAccess, this.resourceTracker, result);
 	}
 }

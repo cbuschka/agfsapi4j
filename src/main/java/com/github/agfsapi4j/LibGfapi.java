@@ -1,6 +1,8 @@
 package com.github.agfsapi4j;
 
 import com.sun.jna.Library;
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.PointerByReference;
 
 // see https://github.com/gluster/glusterfs/blob/master/api/src/glfs.h
 public interface LibGfapi extends Library
@@ -46,4 +48,10 @@ public interface LibGfapi extends Library
 	int glfs_symlink(long glFsPtr, String targetPath, String sourcePath);
 
 	int glfs_stat(long glFsPtr, String path, byte[] statBuf);
+
+	Pointer glfs_opendir(long glFsPtr, String path);
+
+	int glfs_readdirplus_r(Pointer glFsFilePtr, byte[] statsBuf, byte[] direntBuf, byte[] resultBuf);
+
+	int glfs_closedir(Pointer flFsPtr);
 }

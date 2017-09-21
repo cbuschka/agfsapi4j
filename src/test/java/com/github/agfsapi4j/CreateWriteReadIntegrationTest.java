@@ -103,6 +103,17 @@ public class CreateWriteReadIntegrationTest
 		session.rmdir(testDirPath + ".2");
 	}
 
+	@Test
+	public void opendir()
+	{
+		GlusterFsDirectoryIndex index = session.opendir("/.test/");
+		while (index.next())
+		{
+			System.err.println(index.getName());
+		}
+		index.close();
+	}
+
 	private void testMode(int perms)
 	{
 		String filePath = testFile(Integer.toOctalString(perms));
