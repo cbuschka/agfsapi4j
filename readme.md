@@ -1,6 +1,16 @@
-# AGFsApi4J - an alternative Gluster FS API for Java [![Build Status](https://travis-ci.org/agfsapi4j/agfsapi4j.svg?branch=master)](https://travis-ci.org/agfsapi4j/agfsapi4j) [![Test Coverage](https://codecov.io/gh/agfsapi4j/agfsapi4j/branch/master/graph/badge.svg)](https://codecov.io/gh/agfsapi4j/agfsapi4j) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
+# AGFsApi4J - an alternative Gluster FS API for Java [![Build Status](https://travis-ci.org/agfsapi4j/agfsapi4j.svg?branch=master)](https://travis-ci.org/agfsapi4j/agfsapi4j) [![Test Coverage](https://codecov.io/gh/agfsapi4j/agfsapi4j/branch/master/graph/badge.svg)](https://codecov.io/gh/agfsapi4j/agfsapi4j) [![Maven Central](https://img.shields.io/maven-central/v/com.github.agfsapi4j/agfsapi4j.svg)](https://search.maven.org/#search%7Cga%7C1%7Cagfsapi4j) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 
 #### An alternative GlusterFS API for Java
+
+## Maven Dependency
+
+```
+<dependency>
+  <groupId>com.github.agfsapi4j</groupId>
+  <artifactId>agfsapi4j</artifactId>
+  <version>0.0.1</version>
+</dependency>
+```
 
 ## Comparison with original GlusterFS Java bindings
 The original plan was the creation of a pure Java GlusterFS client lib. But this idea was discarded because of GlusterFS use 
