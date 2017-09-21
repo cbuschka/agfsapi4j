@@ -21,7 +21,7 @@ public class CreateWriteReadIntegrationTest
 	@Before
 	public void setUp()
 	{
-		session = GlusterFsApi.newInstance().connect("knot1", GlusterFsApi.DEFAULT_PORT, "vol0");
+		session = GlusterFsApi.newInstance().connect(System.getProperty("com.github.agfsapi4j.it.host", "knot1"), GlusterFsApi.DEFAULT_PORT, "vol0");
 	}
 
 	@After
