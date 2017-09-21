@@ -6,7 +6,7 @@ BASE_DIR=$(cd `dirname $0` && pwd)
 
 docker build --tag agfsapi4j-integration-test-build:local -f $BASE_DIR/Dockerfile $BASE_DIR
 
-CMD='mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent verify -Dcom.github.agfsapi4j.it.hostname=\$HOSTNAME -Pintegration-tests -Dmaven.repo.local=/work/.m2/repository/'
+CMD='mvn clean package -Dcom.github.agfsapi4j.it.hostname=\$HOSTNAME -Pintegration-tests -Dmaven.repo.local=/work/.m2/repository/'
 if [ $# -ne 0 ]; then
   CMD="$*"
 fi

@@ -117,6 +117,7 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+                    <argLine>@{surefireArgLine}</argLine>
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
@@ -136,9 +137,24 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>prepare-agent-for-surefire</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <propertyName>surefireArgLine</propertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>prepare-agent-for-failsafe</id>
+                        <goals>
+                            <goal>prepare-agent-integration</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <propertyName>failsafeArgLine</propertyName>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>report</id>
@@ -211,6 +227,7 @@
                                     <goal>integration-test</goal>
                                 </goals>
                                 <configuration>
+                                    <argLine>@{failsafeArgLine}</argLine>
                                     <skip>false</skip>
                                     <includes>
                                         <include>**/*IntegrationTest.java</include>
