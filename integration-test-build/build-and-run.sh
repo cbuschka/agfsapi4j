@@ -6,7 +6,7 @@ BASE_DIR=$(cd `dirname $0` && pwd)
 
 docker build --tag agfsapi4j-integration-test-build:local -f $BASE_DIR/Dockerfile $BASE_DIR
 
-CMD='mvn clean package -Dcom.github.agfsapi4j.it.hostname=\$HOSTNAME -Pintegration-tests'
+CMD='mvn clean package -Dcom.github.agfsapi4j.it.hostname=\$HOSTNAME -Pintegration-tests sonar:sonar'
 if [ $# -ne 0 ]; then
   CMD="$*"
 fi
