@@ -222,54 +222,105 @@ public class GlusterFsSession implements Closeable
 	{
 		checkConnected();
 
-		byte[] bbuf = new byte[512];
-		int result = this.lib.glfs_stat(this.glFsPtr, path, bbuf);
-		checkError(result, "glfs_stat failed.");
+		try
+		{
+			this.logAccess.beforeOp();
+			byte[] bbuf = new byte[512];
+			int result = this.lib.glfs_stat(this.glFsPtr, path, bbuf);
+			checkError(result, "glfs_stat failed.");
 
-		ByteBuffer buf = ByteBuffer.wrap(bbuf);
-		buf.order(ByteOrder.LITTLE_ENDIAN);
+			ByteBuffer buf = ByteBuffer.wrap(bbuf);
+			buf.order(ByteOrder.LITTLE_ENDIAN);
 
-		return new GlusterFsFileStats(buf);
+			return new FileStatsImpl(buf);
+		}
+		finally
+		{
+			this.logAccess.afterOp();
+		}
 	}
 
 	public void symlink(String targetPath, String sourcePath)
 	{
 		checkConnected();
 
-		int result = this.lib.glfs_symlink(this.glFsPtr, targetPath, sourcePath);
-		checkError(result, "glfs_symlink failed.");
+		try
+		{
+			this.logAccess.beforeOp();
+
+			int result = this.lib.glfs_symlink(this.glFsPtr, targetPath, sourcePath);
+			checkError(result, "glfs_symlink failed.");
+		}
+		finally
+		{
+			this.logAccess.afterOp();
+		}
 	}
 
 	public void rename(String oldPath, String newPath)
 	{
 		checkConnected();
 
-		int result = this.lib.glfs_rename(this.glFsPtr, oldPath, newPath);
-		checkError(result, "glfs_rename failed.");
+		try
+		{
+			this.logAccess.beforeOp();
+			int result = this.lib.glfs_rename(this.glFsPtr, oldPath, newPath);
+			checkError(result, "glfs_rename failed.");
+		}
+		finally
+		{
+			this.logAccess.afterOp();
+		}
 	}
 
 	public void mkdir(String path, int mode)
 	{
 		checkConnected();
 
-		int result = this.lib.glfs_mkdir(this.glFsPtr, path, Mode.valueOf(mode));
-		checkError(result, "glfs_mkdir failed.");
+		try
+		{
+			this.logAccess.beforeOp();
+
+			int result = this.lib.glfs_mkdir(this.glFsPtr, path, Mode.valueOf(mode));
+			checkError(result, "glfs_mkdir failed.");
+		}
+		finally
+		{
+			this.logAccess.afterOp();
+		}
 	}
 
 	public void rmdir(String path)
 	{
 		checkConnected();
 
-		int result = this.lib.glfs_rmdir(this.glFsPtr, path);
-		checkError(result, "glfs_rmdir failed.");
+		try
+		{
+			this.logAccess.beforeOp();
+
+			int result = this.lib.glfs_rmdir(this.glFsPtr, path);
+			checkError(result, "glfs_rmdir failed.");
+		}
+		finally
+		{
+			this.logAccess.afterOp();
+		}
 	}
 
 	public void unlink(String path)
 	{
 		checkConnected();
 
-		int result = this.lib.glfs_unlink(this.glFsPtr, path);
-		checkError(result, "glfs_unlink failed.");
+		try
+		{
+			this.logAccess.beforeOp();
+			int result = this.lib.glfs_unlink(this.glFsPtr, path);
+			checkError(result, "glfs_unlink failed.");
+		}
+		finally
+		{
+			this.logAccess.afterOp();
+		}
 	}
 
 	public void truncate(String path)
@@ -281,26 +332,53 @@ public class GlusterFsSession implements Closeable
 	{
 		checkConnected();
 
-		int result = this.lib.glfs_truncate(this.glFsPtr, path, offset);
-		checkError(result, "glfs_truncate failed.");
+		try
+		{
+			this.logAccess.beforeOp();
+
+			int result = this.lib.glfs_truncate(this.glFsPtr, path, offset);
+			checkError(result, "glfs_truncate failed.");
+		}
+		finally
+		{
+			this.logAccess.afterOp();
+		}
 	}
 
 	public void chdir(String path)
 	{
 		checkConnected();
 
-		int result = this.lib.glfs_chdir(this.glFsPtr, path);
-		checkError(result, "glfs_chdir failed.");
+		try
+		{
+			this.logAccess.beforeOp();
+
+			int result = this.lib.glfs_chdir(this.glFsPtr, path);
+			checkError(result, "glfs_chdir failed.");
+		}
+		finally
+		{
+			this.logAccess.afterOp();
+		}
 	}
 
 	public GlusterFsDirectoryIndex opendir(String path)
 	{
 		checkConnected();
 
-		Pointer result = this.lib.glfs_opendir(this.glFsPtr, path);
-		checkPtr(result, "glfs_opendir failed.");
+		try
+		{
+			this.logAccess.beforeOp();
 
-		return new DirectoryIndexImpl(this, this.lib,
-				this.logAccess, this.resourceTracker, result);
+			Pointer result = this.lib.glfs_opendir(this.glFsPtr, path);
+			checkPtr(result, "glfs_opendir failed.");
+
+			return new DirectoryIndexImpl(this, this.lib,
+					this.logAccess, this.resourceTracker, result);
+		}
+		finally
+		{
+			this.logAccess.afterOp();
+		}
 	}
 }

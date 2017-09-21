@@ -32,6 +32,18 @@ class DirectoryIndexImpl implements GlusterFsDirectoryIndex, Resource
 	{
 		if (this.glFsFilePtr != null)
 		{
+			readNextEntry();
+		}
+
+		return entry != null;
+	}
+
+	private void readNextEntry()
+	{
+		try
+		{
+			this.logAccess.beforeOp();
+
 			int result = this.lib.glfs_readdirplus_r(this.glFsFilePtr, statsBuf, direntBuf, resultBuf);
 			session.checkError(result, "glfs_readdirplus_r failed.");
 			if (!isResultBufEmpty(resultBuf))
@@ -47,8 +59,10 @@ class DirectoryIndexImpl implements GlusterFsDirectoryIndex, Resource
 				this.entry = null;
 			}
 		}
-
-		return entry != null;
+		finally
+		{
+			this.logAccess.afterOp();
+		}
 	}
 
 	public GlusterFsFileStats getStats()

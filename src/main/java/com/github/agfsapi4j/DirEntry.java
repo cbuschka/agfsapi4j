@@ -23,7 +23,7 @@ class DirEntry
 		this.name = getStringFrom(19, direntBuf);
 		this.type = direntBuf.get(18);
 
-		this.stats = new GlusterFsFileStats(statsBuf);
+		this.stats = new FileStatsImpl(statsBuf);
 	}
 
 	public GlusterFsFileStats getStats()
