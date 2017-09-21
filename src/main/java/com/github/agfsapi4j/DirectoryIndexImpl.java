@@ -98,7 +98,7 @@ class DirectoryIndexImpl implements GlusterFsDirectoryIndex, Resource
 	{
 		checkEntry();
 
-		return this.entry.isRegularFile();
+		return this.entry.getStats().isRegularFile();
 	}
 
 	@Override
@@ -106,7 +106,7 @@ class DirectoryIndexImpl implements GlusterFsDirectoryIndex, Resource
 	{
 		checkEntry();
 
-		return this.entry.isDirectory();
+		return this.entry.getStats().isDirectory();
 	}
 
 	@Override
@@ -114,7 +114,7 @@ class DirectoryIndexImpl implements GlusterFsDirectoryIndex, Resource
 	{
 		checkEntry();
 
-		return this.entry.isSymbolicLink();
+		return this.entry.getStats().isSymbolicLink();
 	}
 
 	public void close()
