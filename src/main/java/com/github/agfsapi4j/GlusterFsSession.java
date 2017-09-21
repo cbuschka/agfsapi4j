@@ -5,8 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
-import java.io.IOException;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -224,21 +222,14 @@ public class GlusterFsSession implements Closeable
 	{
 		checkConnected();
 
-		try
-		{
-			byte[] bbuf = new byte[512];
-			int result = this.lib.glfs_stat(this.glFsPtr, path, bbuf);
-			checkError(result, "glfs_stat failed.");
+		byte[] bbuf = new byte[512];
+		int result = this.lib.glfs_stat(this.glFsPtr, path, bbuf);
+		checkError(result, "glfs_stat failed.");
 
-			ByteBuffer buf = ByteBuffer.wrap(bbuf);
-			buf.order(ByteOrder.LITTLE_ENDIAN);
+		ByteBuffer buf = ByteBuffer.wrap(bbuf);
+		buf.order(ByteOrder.LITTLE_ENDIAN);
 
-			return new GlusterFsFileStats(buf);
-		}
-		catch (IOException ex)
-		{
-			throw new UndeclaredThrowableException(ex);
-		}
+		return new GlusterFsFileStats(buf);
 	}
 
 	public void symlink(String targetPath, String sourcePath)

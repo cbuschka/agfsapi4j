@@ -6,5 +6,11 @@ public interface GlusterFsDirectoryIndex
 
 	String getName();
 
+	boolean isRegularFile();
+
+	boolean isDirectory();
+
+	boolean isSymbolicLink();
+
 	void close();
 }

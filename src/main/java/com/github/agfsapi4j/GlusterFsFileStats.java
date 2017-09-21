@@ -36,7 +36,7 @@ public class GlusterFsFileStats
     };
 */
 
-	GlusterFsFileStats(ByteBuffer buf) throws IOException
+	GlusterFsFileStats(ByteBuffer buf)
 	{
 		this.mode = (0x00007fff & buf.getInt(24));
 		this.uid = buf.getShort(28);

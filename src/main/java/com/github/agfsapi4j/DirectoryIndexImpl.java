@@ -34,12 +34,12 @@ class DirectoryIndexImpl implements GlusterFsDirectoryIndex, Resource
 		{
 			int result = this.lib.glfs_readdirplus_r(this.glFsFilePtr, statsBuf, direntBuf, resultBuf);
 			session.checkError(result, "glfs_readdirplus_r failed.");
-			ByteBuffer direntByteBuffer = ByteBuffer.wrap(direntBuf);
-			direntByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-			ByteBuffer statsByteBuffer = ByteBuffer.wrap(statsBuf);
-			statsByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-			if (!isResultBufEmpty())
+			if (!isResultBufEmpty(resultBuf))
 			{
+				ByteBuffer direntByteBuffer = ByteBuffer.wrap(direntBuf);
+				direntByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+				ByteBuffer statsByteBuffer = ByteBuffer.wrap(statsBuf);
+				statsByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
 				this.entry = new DirEntry(direntByteBuffer, statsByteBuffer);
 			}
 			else
@@ -51,7 +51,14 @@ class DirectoryIndexImpl implements GlusterFsDirectoryIndex, Resource
 		return entry != null;
 	}
 
-	private boolean isResultBufEmpty()
+	public GlusterFsFileStats getStats()
+	{
+		checkEntry();
+
+		return this.entry.getStats();
+	}
+
+	private boolean isResultBufEmpty(byte[] resultBuf)
 	{
 		return resultBuf[0] == 0 && resultBuf[1] == 0 && resultBuf[2] == 0 && resultBuf[3] == 0;
 	}
@@ -59,13 +66,48 @@ class DirectoryIndexImpl implements GlusterFsDirectoryIndex, Resource
 	@Override
 	public String getName()
 	{
+		checkEntry();
+
 		return this.entry.getName();
+	}
+
+	private void checkEntry()
+	{
+		if (this.entry == null)
+		{
+			throw new IllegalStateException("No current entry.");
+		}
+	}
+
+	@Override
+	public boolean isRegularFile()
+	{
+		checkEntry();
+
+		return this.entry.isRegularFile();
+	}
+
+	@Override
+	public boolean isDirectory()
+	{
+		checkEntry();
+
+		return this.entry.isDirectory();
+	}
+
+	@Override
+	public boolean isSymbolicLink()
+	{
+		checkEntry();
+
+		return this.entry.isSymbolicLink();
 	}
 
 	public void close()
 	{
 		if (this.glFsFilePtr != null)
 		{
+			this.entry = null;
 			this.resultBuf = null;
 			this.statsBuf = null;
 			this.direntBuf = null;

@@ -109,7 +109,20 @@ public class CreateWriteReadIntegrationTest
 		GlusterFsDirectoryIndex index = session.opendir("/.test/");
 		while (index.next())
 		{
-			System.err.println(index.getName());
+			char type = '?';
+			if (index.isDirectory())
+			{
+				type = 'd';
+			}
+			else if (index.isRegularFile())
+			{
+				type = 'f';
+			}
+			if (index.isSymbolicLink())
+			{
+				type = 's';
+			}
+			System.err.println(type + " " + index.getName());
 		}
 		index.close();
 	}
