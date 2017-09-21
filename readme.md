@@ -8,7 +8,7 @@
 <dependency>
   <groupId>com.github.agfsapi4j</groupId>
   <artifactId>agfsapi4j</artifactId>
-  <version>0.0.2</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 
