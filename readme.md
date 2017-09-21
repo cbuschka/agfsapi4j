@@ -8,7 +8,7 @@
 <dependency>
   <groupId>com.github.agfsapi4j</groupId>
   <artifactId>agfsapi4j</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
 </dependency>
 ```
 
@@ -42,9 +42,9 @@ Currently the features implemented are far from complete, but messages in case o
 | Create directory            |     yes    |
 | Rename directory            |     yes    |
 | Remove directory            |     yes    |
-| List directory files        |     no     |
-| Get file stats              |     yes    |
-| Get directory stats         |     yes    |
+| List directory files        |    basic   |
+| Get file stats              |    basic   |
+| Get directory stats         |    basic   |
 | Get cluster status          |     no     |
 | Java filesytem integration  |     no     |
 | ...                         |     no     |
