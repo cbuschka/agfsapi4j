@@ -152,6 +152,7 @@ public class GlusterFsSession implements Closeable
 		return this.glFsPtr == 0;
 	}
 
+	@SuppressWarnings("squid:ObjectFinalizeOverridenCheck")
 	@Override
 	protected void finalize() throws Throwable
 	{
