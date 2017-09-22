@@ -4,7 +4,8 @@ import java.nio.ByteBuffer;
 
 class DirEntry
 {
-	public static final int MAX_FILE_NAME_LENGTH = 512;
+	private static final int MAX_FILE_NAME_LENGTH = 512;
+	
 	private GlusterFsFileStats stats;
 	private String name;
 
