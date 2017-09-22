@@ -9,7 +9,6 @@ import java.util.Random;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.AdditionalMatchers.not;
 
 public class CreateWriteReadIntegrationTest
 {
@@ -77,8 +76,8 @@ public class CreateWriteReadIntegrationTest
 
 		GlusterFsFileStats stat = session.stat(testFilePath);
 		assertThat(stat.getSize(), is(1025));
-		assertThat(stat.getUid(), is(not(0)));
-		assertThat(stat.getGid(), is(not(0)));
+		assertThat(stat.getUid() != 0, is(true));
+		assertThat(stat.getGid() != 0, is(true));
 		assertThat(Integer.toOctalString(stat.getMode()), is("644"));
 
 		session.chown(testFilePath, stat.getUid(), stat.getGid());
