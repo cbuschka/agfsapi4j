@@ -8,7 +8,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -78,5 +80,39 @@ public class GlusterFsSessionTest
 	private void givenAConnectedSession()
 	{
 		session.glFsPtr = CONNECTED_SESSION_ID;
+	}
+
+	@Test
+	public void closeClosesResources()
+	{
+		givenAConnectedSession();
+
+		session.close();
+
+		verify(resourceTracker).closeResources();
+		verify(logAccess).close(true);
+		verify(lib).glfs_fini(CONNECTED_SESSION_ID);
+	}
+
+	@Test
+	public void finalizeClosesWhenNotClosed() throws Throwable
+	{
+		givenAConnectedSession();
+
+		session.finalize();
+
+		verify(resourceTracker).closeResources();
+		verify(logAccess).close(true);
+		verify(lib).glfs_fini(CONNECTED_SESSION_ID);
+	}
+
+	@Test
+	public void finalizeDoesntCloseWhenAlreadyClosed() throws Throwable
+	{
+		session.finalize();
+
+		verify(resourceTracker, never()).closeResources();
+		verify(logAccess, never()).close(true);
+		verify(lib, never()).glfs_fini(anyLong());
 	}
 }

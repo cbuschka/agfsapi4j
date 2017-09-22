@@ -20,8 +20,15 @@ class LogAccess
 
 	private static final Random random = new Random();
 
+	private GlusterFsSession session;
+
 	private File logFile = new File("/tmp/gfapi4j-" + Long.toHexString(System.currentTimeMillis()) + "-" + Long.toHexString(random.nextLong()) + ".log");
 	private long prevLogLength = 0L;
+
+	public LogAccess(GlusterFsSession session)
+	{
+		this.session = session;
+	}
 
 	public List<String> getLogMessages()
 	{
@@ -53,7 +60,7 @@ class LogAccess
 
 	private List<String> readLines(RandomAccessFile f) throws IOException
 	{
-		BufferedReader bufRd = new BufferedReader(new InputStreamReader(new RandomAccessFileInputStream(f, false)));
+		BufferedReader bufRd = new BufferedReader(new InputStreamReader(new RandomAccessFileInputStream(f, false), session.getCharSet()));
 		List<String> lines = new ArrayList<>();
 		String line;
 		while ((line = bufRd.readLine()) != null)

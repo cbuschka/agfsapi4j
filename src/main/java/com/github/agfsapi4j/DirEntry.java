@@ -4,13 +4,13 @@ import java.nio.ByteBuffer;
 
 class DirEntry
 {
-	private static final int MAX_FILE_NAME_LENGTH = 512;
-	
 	private GlusterFsFileStats stats;
+	private GlusterFsSession session;
 	private String name;
 
-	DirEntry(ByteBuffer direntBuf, ByteBuffer statsBuf)
+	DirEntry(GlusterFsSession session, ByteBuffer direntBuf, ByteBuffer statsBuf)
 	{
+		this.session = session;
 		this.name = getStringFrom(19, direntBuf);
 		this.stats = new FileStatsImpl(statsBuf);
 	}
@@ -22,7 +22,7 @@ class DirEntry
 
 	private String getStringFrom(int pos, ByteBuffer buf)
 	{
-		return new CStringReader(MAX_FILE_NAME_LENGTH, "UTF-8").readFrom(buf, pos);
+		return new CStringReader(this.session.getMaxFileNameLength(), this.session.getCharSet()).readFrom(buf, pos);
 	}
 
 	public String getName()

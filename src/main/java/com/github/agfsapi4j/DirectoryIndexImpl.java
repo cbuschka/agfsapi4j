@@ -52,7 +52,7 @@ class DirectoryIndexImpl implements GlusterFsDirectoryIndex, Resource
 				direntByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
 				ByteBuffer statsByteBuffer = ByteBuffer.wrap(statsBuf);
 				statsByteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-				this.entry = new DirEntry(direntByteBuffer, statsByteBuffer);
+				this.entry = new DirEntry(this.session, direntByteBuffer, statsByteBuffer);
 			}
 			else
 			{

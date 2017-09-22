@@ -15,8 +15,12 @@ public class GlusterFsSession implements Closeable
 
 	private Logger log = LoggerFactory.getLogger(GlusterFsSession.class);
 
+	private int maxPathLength = GlusterFsApi.DEFAULT_MAX_PATH_LENGTH;
+	private int maxFileNameLength = GlusterFsApi.DEFAULT_MAX_FILE_NAME_LENGTH;
+	private String charSet = GlusterFsApi.DEFAULT_CHAR_SET;
+
 	private LibGfapi lib = LibGfapiProvider.get();
-	private LogAccess logAccess = new LogAccess();
+	private LogAccess logAccess = new LogAccess(this);
 	private ResourceTracker resourceTracker = new ResourceTracker();
 
 	private Throwable connectStackTrace;
@@ -73,15 +77,17 @@ public class GlusterFsSession implements Closeable
 
 	public String cwd()
 	{
+		checkConnected();
+
 		try
 		{
 			this.logAccess.beforeOp();
 
-			byte[] bbuf = new byte[4096];
+			byte[] bbuf = new byte[maxPathLength * 2];
 			long ptr = lib.glfs_getcwd(glFsPtr, bbuf, bbuf.length);
 			checkPtr(ptr, "glfs_getcwd failed.");
 
-			return new CStringReader(1024, "UTF-8").readFrom(ByteBuffer.wrap(bbuf), 0);
+			return new CStringReader(maxPathLength, charSet).readFrom(ByteBuffer.wrap(bbuf), 0);
 		}
 		finally
 		{
@@ -381,5 +387,15 @@ public class GlusterFsSession implements Closeable
 		{
 			this.logAccess.afterOp();
 		}
+	}
+
+	int getMaxFileNameLength()
+	{
+		return maxFileNameLength;
+	}
+
+	String getCharSet()
+	{
+		return charSet;
 	}
 }
