@@ -30,6 +30,7 @@ echo "Command: $CMD"
 echo "sha256 of salted SONAR_TOKEN: $(echo "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b$SONAR_TOKEN" | sha256sum)"
 
 docker run -ti --rm -e DEBUG_ENTRYPOINT=1 \
+	-e SONAR_TOKEN=$SONAR_TOKEN \
 	-e WORKER_UID=$(id -u) \
 	-e WORKER_GID=$(id -g) \
 	-v $PROJECT_DIR/:/work \
