@@ -21,7 +21,7 @@ else
   docker save -o $BUILD_IMAGE_CACHE_FILE $BUILD_IMAGE_FQNAME
 fi
 
-CMD="mvn -Dsonar.login=$SONAR_TOKEN -Dcom.github.agfsapi4j.it.hostname=\$HOSTNAME -Pintegration-tests,sonar-upload clean verify"
+CMD="mvn -Dsonar.login=$SONAR_TOKEN -Dcom.github.agfsapi4j.it.hostname=\$HOSTNAME -Pcode-analysis,integration-tests,sonar-upload clean verify"
 if [ $# -ne 0 ]; then
   CMD="$*"
 fi
