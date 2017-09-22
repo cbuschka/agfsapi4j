@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.List;
 
 public class GlusterFsSession implements Closeable
 {
@@ -214,8 +215,8 @@ public class GlusterFsSession implements Closeable
 
 	void raiseError(String message)
 	{
-		String errors = this.logAccess.getLogMessages();
-		throw new IllegalStateException(message + "\n" + errors);
+		List<String> errors = this.logAccess.getLogMessages();
+		throw new GlusterFsRuntimeException(message, errors);
 	}
 
 	public GlusterFsFileStats stat(String path)

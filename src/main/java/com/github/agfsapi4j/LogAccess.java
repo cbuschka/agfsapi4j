@@ -3,12 +3,15 @@ package com.github.agfsapi4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 class LogAccess
@@ -20,7 +23,7 @@ class LogAccess
 	private File logFile = new File("/tmp/gfapi4j-" + Long.toHexString(System.currentTimeMillis()) + "-" + Long.toHexString(random.nextLong()) + ".log");
 	private long prevLogLength = 0L;
 
-	public String getLogMessages()
+	public List<String> getLogMessages()
 	{
 		if (isLogFileAvailable())
 		{
@@ -28,38 +31,37 @@ class LogAccess
 		}
 		else
 		{
-			return "(No log information available, sorry.)";
+			return Collections.emptyList();
 		}
 	}
 
-	private String readLog()
+	private List<String> readLog()
 	{
-		try (FileInputStream in = new FileInputStream(this.logFile);)
+		try (RandomAccessFile f = new RandomAccessFile(this.logFile, "r");)
 		{
-			StringBuilder buf = new StringBuilder();
-			seekToPrevPosition(in);
-			char[] cbuf = new char[1024];
-			Reader rd = new InputStreamReader(in);
-			int count;
-			while ((count = rd.read(cbuf)) != -1)
-			{
-				buf.append(cbuf, 0, count);
-			}
+			f.seek(this.prevLogLength);
 
-			return buf.toString();
+			return readLines(f);
 		}
 		catch (IOException ex)
 		{
-			return ex.getMessage();
+			log.error("Error reading log file.", ex);
+
+			return Collections.emptyList();
 		}
 	}
 
-	private void seekToPrevPosition(FileInputStream in) throws IOException
+	private List<String> readLines(RandomAccessFile f) throws IOException
 	{
-		int len = 0;
-		while ((len += in.skip(this.prevLogLength - len)) < this.prevLogLength)
+		BufferedReader bufRd = new BufferedReader(new InputStreamReader(new RandomAccessFileInputStream(f, false)));
+		List<String> lines = new ArrayList<>();
+		String line;
+		while ((line = bufRd.readLine()) != null)
 		{
+			lines.add(line);
 		}
+
+		return lines;
 	}
 
 	public void beforeOp()

@@ -9,6 +9,7 @@ import java.util.Random;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class CreateWriteReadIntegrationTest
 {
@@ -57,6 +58,23 @@ public class CreateWriteReadIntegrationTest
 		cwd = session.cwd();
 		assertThat(cwd, is(testDirPath));
 	}
+
+	@Test
+	public void errorLogAvailable()
+	{
+		String testFilePath = testFile("errorLogAvailable");
+
+		try
+		{
+			session.stat(testFilePath);
+			fail();
+		}
+		catch (GlusterFsRuntimeException ex)
+		{
+			assertThat(ex.getLogMessages().size() == 0, is(false));
+		}
+	}
+
 
 	private String testFile(String suffix)
 	{
