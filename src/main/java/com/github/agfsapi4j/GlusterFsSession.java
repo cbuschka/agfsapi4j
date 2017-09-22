@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
 
+@SuppressWarnings("squid:S1191")
 public class GlusterFsSession implements Closeable
 {
 	private static final int DEFAULT_LOG_LEVEL = 10;

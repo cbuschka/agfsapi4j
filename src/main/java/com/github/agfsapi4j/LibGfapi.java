@@ -2,9 +2,9 @@ package com.github.agfsapi4j;
 
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
-import com.sun.jna.ptr.PointerByReference;
 
 // see https://github.com/gluster/glusterfs/blob/master/api/src/glfs.h
+@SuppressWarnings({"squid:S1191", "squid:S00100"})
 public interface LibGfapi extends Library
 {
 	long glfs_new(String volName);

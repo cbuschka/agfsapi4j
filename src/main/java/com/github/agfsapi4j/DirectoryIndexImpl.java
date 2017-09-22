@@ -5,6 +5,7 @@ import com.sun.jna.Pointer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+@SuppressWarnings("squid:S1191")
 class DirectoryIndexImpl implements GlusterFsDirectoryIndex, Resource
 {
 	private GlusterFsSession session;

@@ -2,6 +2,7 @@ package com.github.agfsapi4j;
 
 import com.sun.jna.Native;
 
+@SuppressWarnings({"squid:S1191"})
 class LibGfapiProvider
 {
 	private static LibGfapi nativeLib;
