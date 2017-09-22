@@ -126,8 +126,17 @@ class DirectoryIndexImpl implements GlusterFsDirectoryIndex, Resource
 			this.statsBuf = null;
 			this.direntBuf = null;
 
-			int result = this.lib.glfs_closedir(this.glFsFilePtr);
-			session.checkError(result, "glfs_closedir failed.");
+			try
+			{
+				this.logAccess.beforeOp();
+
+				int result = this.lib.glfs_closedir(this.glFsFilePtr);
+				session.checkError(result, "glfs_closedir failed.");
+			}
+			finally
+			{
+				this.logAccess.afterOp();
+			}
 
 			resourceTracker.unallocated(this);
 			this.glFsFilePtr = null;
