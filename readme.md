@@ -2,7 +2,7 @@
 
 #### An alternative GlusterFS API for Java
 
-![Alternative Gluster FS API for Java](doc/images/agfsapi4j-logo-square-egg-384x384.png "The alternative Bug")
+![Alternative Gluster FS API for Java](https://github.com/agfsapi4j/agfsapi4j/raw/master/doc/images/agfsapi4j-logo-egg-230x332.png "The alternative Bug")
 
 ## Maven Dependency
 
