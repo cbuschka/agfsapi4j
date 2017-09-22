@@ -1,14 +1,20 @@
 package com.github.agfsapi4j;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.file.Files;
 import java.util.Random;
 
 class LogAccess
 {
+	private static Logger log = LoggerFactory.getLogger(LogAccess.class);
+
 	private static final Random random = new Random();
 
 	private File logFile = new File("/tmp/gfapi4j-" + Long.toHexString(System.currentTimeMillis()) + "-" + Long.toHexString(random.nextLong()) + ".log");
@@ -16,7 +22,7 @@ class LogAccess
 
 	public String getLogMessages()
 	{
-		if (this.logFile != null && this.logFile.isFile())
+		if (isLogFileAvailable())
 		{
 			return readLog();
 		}
@@ -73,7 +79,7 @@ class LogAccess
 
 	private void updateLogFilePos()
 	{
-		if (this.logFile != null && this.logFile.isFile())
+		if (isLogFileAvailable())
 		{
 			this.prevLogLength = this.logFile.length();
 		}
@@ -81,10 +87,22 @@ class LogAccess
 
 	public void close(boolean delete)
 	{
-		if (delete && this.logFile != null && this.logFile.isFile())
+		if (delete && isLogFileAvailable())
 		{
-			this.logFile.delete();
-			this.logFile = null;
+			try
+			{
+				Files.delete(this.logFile.toPath());
+				this.logFile = null;
+			}
+			catch (IOException ex)
+			{
+				log.warn("Deleting log file {} failed.", this.logFile, ex);
+			}
 		}
+	}
+
+	private boolean isLogFileAvailable()
+	{
+		return this.logFile != null && this.logFile.isFile();
 	}
 }
