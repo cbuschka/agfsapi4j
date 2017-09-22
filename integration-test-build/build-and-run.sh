@@ -10,6 +10,8 @@ cd $BASE_DIR
 BUILD_IMAGE_CHECKSUM=$(tar c assets/ Dockerfile | md5sum | cut -d' ' -f 1)
 BUILD_IMAGE_CACHE_FILE=$HOME/.cache/docker/agfsapi4j-integration-test-build.$BUILD_IMAGE_CHECKSUM.docker.tar
 
+ls -la $(dirname $BUILD_IMAGE_CACHE_FILE)/
+
 if [ -f "$BUILD_IMAGE_CACHE_FILE" ]; then
   docker load -i $BUILD_IMAGE_CACHE_FILE
 else
