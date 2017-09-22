@@ -76,12 +76,12 @@ public class GlusterFsSession implements Closeable
 		try
 		{
 			this.logAccess.beforeOp();
-			byte[] cbuf = new byte[4096];
-			long ptr = lib.glfs_getcwd(glFsPtr, cbuf, cbuf.length);
+
+			byte[] bbuf = new byte[4096];
+			long ptr = lib.glfs_getcwd(glFsPtr, bbuf, bbuf.length);
 			checkPtr(ptr, "glfs_getcwd failed.");
-			int zeroPos;
-			for (zeroPos = 0; zeroPos < cbuf.length && cbuf[zeroPos] != 0; ++zeroPos) ;
-			return new String(cbuf, 0, zeroPos);
+
+			return new CStringReader(1024, "UTF-8").readFrom(ByteBuffer.wrap(bbuf), 0);
 		}
 		finally
 		{
