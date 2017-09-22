@@ -31,7 +31,7 @@ class LogAccess
 		try (FileInputStream in = new FileInputStream(this.logFile);)
 		{
 			StringBuilder buf = new StringBuilder();
-			in.skip(this.prevLogLength);
+			seekToPrevPosition(in);
 			char[] cbuf = new char[1024];
 			Reader rd = new InputStreamReader(in);
 			int count;
@@ -45,6 +45,14 @@ class LogAccess
 		catch (IOException ex)
 		{
 			return ex.getMessage();
+		}
+	}
+
+	private void seekToPrevPosition(FileInputStream in) throws IOException
+	{
+		int len = 0;
+		while ((len += in.skip(this.prevLogLength - len)) < this.prevLogLength)
+		{
 		}
 	}
 
