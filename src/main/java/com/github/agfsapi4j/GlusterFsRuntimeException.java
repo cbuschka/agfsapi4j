@@ -6,7 +6,7 @@ import java.util.List;
 
 public class GlusterFsRuntimeException extends RuntimeException
 {
-	private List<String> logMessages;
+	private final List<String> logMessages;
 
 	public GlusterFsRuntimeException(String message, List<String> logMessages)
 	{
