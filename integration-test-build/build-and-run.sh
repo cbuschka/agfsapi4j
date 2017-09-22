@@ -7,7 +7,7 @@ BASE_DIR=$(cd `dirname $0` && pwd)
 BUILD_IMAGE_FQNAME=agfsapi4j-integration-test-build:local
 
 cd $BASE_DIR
-BUILD_IMAGE_CHECKSUM=$(tar c assets/ Dockerfile | md5sum | cut -d' ' -f 1)
+BUILD_IMAGE_CHECKSUM=$((find . -type f | grep -e assets -e Dockerfile | sort | xargs cat ) | sha256sum | cut -d' ' -f 1)
 BUILD_IMAGE_CACHE_FILE=$HOME/.cache/docker/agfsapi4j-integration-test-build.$BUILD_IMAGE_CHECKSUM.docker.tar
 
 ls -la $(dirname $BUILD_IMAGE_CACHE_FILE)/
